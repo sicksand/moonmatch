@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ms">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -32,6 +32,15 @@
     .moon {
       font-size: 2rem;
     }
+    .fullmoon {
+      font-size: 6rem;
+      margin-top: 1rem;
+      animation: glow 2s infinite alternate;
+    }
+    @keyframes glow {
+      from { text-shadow: 0 0 10px #fff; }
+      to { text-shadow: 0 0 30px #ffd700; }
+    }
     #downloadBtn {
       margin-top: 1rem;
       background-color: #ffd700;
@@ -41,10 +50,10 @@
 </head>
 <body>
   <h1>🌕 MoonMatch</h1>
-  <p>Masukkan tarikh lahir anda dan pasangan</p>
+  <p>Masukkan tarikh lahir anda dan pasangan (format: YYYY-MM-DD)</p>
 
-  <input type="date" id="userDate">
-  <input type="date" id="partnerDate">
+  <input type="text" id="userDate" placeholder="Contoh: 1995-06-21">
+  <input type="text" id="partnerDate" placeholder="Contoh: 1997-11-03">
   <button onclick="getMoonPhases()">Cari Bentuk Bulan</button>
 
   <div class="result" id="result"></div>
@@ -55,6 +64,10 @@
   <script>
     const API_KEY = '35fae9abc9664623acb144018252608';
     const LOCATION = 'Skudai';
+
+    function isValidDate(dateStr) {
+      return /^\d{4}-\d{2}-\d{2}$/.test(dateStr);
+    }
 
     async function fetchMoonPhase(date) {
       const url = `https://api.weatherapi.com/v1/astronomy.json?key=${API_KEY}&q=${LOCATION}&dt=${date}`;
@@ -87,20 +100,32 @@
 
       for (let [a, b] of pairs) {
         if ((p1 === a && p2 === b) || (p1 === b && p2 === a)) {
-          return "💖 Pasangan Pelengkap Bulan Penuh! Saling melengkapi secara simbolik dan emosi.";
+          return {
+            message: "💖 Pasangan Pelengkap Bulan Penuh! Saling melengkapi secara simbolik dan emosi.",
+            showFullMoon: true
+          };
         }
       }
 
-      if (p1 === p2) return "🌟 Serasi secara semula jadi, berkongsi tenaga yang sama.";
-      return "✨ Berbeza fasa, tapi boleh saling belajar dan berkembang bersama.";
+      if (p1 === p2) {
+        return {
+          message: "🌟 Serasi secara semula jadi, berkongsi tenaga yang sama.",
+          showFullMoon: false
+        };
+      }
+
+      return {
+        message: "✨ Berbeza fasa, tapi boleh saling belajar dan berkembang bersama.",
+        showFullMoon: false
+      };
     }
 
     async function getMoonPhases() {
       const userDate = document.getElementById("userDate").value;
       const partnerDate = document.getElementById("partnerDate").value;
 
-      if (!userDate || !partnerDate) {
-        alert("Isi kedua-dua tarikh!");
+      if (!isValidDate(userDate) || !isValidDate(partnerDate)) {
+        alert("Sila masukkan tarikh dalam format YYYY-MM-DD");
         return;
       }
 
@@ -114,7 +139,8 @@
       document.getElementById("result").innerHTML = `
         <p class="moon">Anda: ${userEmoji} <strong>${userPhase}</strong></p>
         <p class="moon">Pasangan: ${partnerEmoji} <strong>${partnerPhase}</strong></p>
-        <p>💞 Keserasian: ${compatibility}</p>
+        <p>💞 Keserasian: ${compatibility.message}</p>
+        ${compatibility.showFullMoon ? '<div class="fullmoon">🌕<p style="font-size:1.2rem;">Bulan Penuh Cinta</p></div>' : ''}
       `;
     }
 
