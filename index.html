@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MoonMatch MVP</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(to bottom, #0f2027, #203a43, #2c5364);
+      color: #fff;
+      text-align: center;
+      padding: 2rem;
+    }
+    h1 { font-size: 2rem; margin-bottom: 1rem; }
+    input, button {
+      padding: 0.7rem;
+      margin: 0.5rem;
+      border-radius: 8px;
+      border: none;
+      font-size: 1rem;
+    }
+    button {
+      background-color: #ff6f61;
+      color: white;
+      cursor: pointer;
+    }
+    .result {
+      margin-top: 2rem;
+      font-size: 1.2rem;
+    }
+    .moon {
+      font-size: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>🌕 MoonMatch</h1>
+  <p>Masukkan tarikh lahir anda dan pasangan</p>
+
+  <input type="date" id="userDate">
+  <input type="date" id="partnerDate">
+  <button onclick="getMoonPhases()">Cari Bentuk Bulan</button>
+
+  <div class="result" id="result"></div>
+
+  <script>
+    const API_KEY = 'YOUR_API_KEY'; // Replace with your WeatherAPI key
+    const LOCATION = 'Skudai'; // You can make this dynamic later
+
+    async function fetchMoonPhase(date) {
+      const url = `https://api.weatherapi.com/v1/astronomy.json?key=${API_KEY}&q=${LOCATION}&dt=${date}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      return data.astronomy.astro.moon_phase;
+    }
+
+    function getMoonEmoji(phase) {
+      const map = {
+        "New Moon": "🌑",
+        "Waxing Crescent": "🌒",
+        "First Quarter": "🌓",
+        "Waxing Gibbous": "🌔",
+        "Full Moon": "🌕",
+        "Waning Gibbous": "🌖",
+        "Last Quarter": "🌗",
+        "Waning Crescent": "🌘"
+      };
+      return map[phase] || "🌙";
+    }
+
+    function getCompatibility(p1, p2) {
+      if (p1 === p2) return "Serasi secara semula jadi 🌟";
+      if (p1.includes("Full") && p2.includes("Full")) return "Pasangan Purnama! Emosi mendalam & saling memahami 💖";
+      return "Berbeza fasa, tapi boleh saling melengkapi ✨";
+    }
+
+    async function getMoonPhases() {
+      const userDate = document.getElementById("userDate").value;
+      const partnerDate = document.getElementById("partnerDate").value;
+
+      if (!userDate || !partnerDate) {
+        alert("Isi kedua-dua tarikh!");
+        return;
+      }
+
+      const userPhase = await fetchMoonPhase(userDate);
+      const partnerPhase = await fetchMoonPhase(partnerDate);
+
+      const userEmoji = getMoonEmoji(userPhase);
+      const partnerEmoji = getMoonEmoji(partnerPhase);
+      const compatibility = getCompatibility(userPhase, partnerPhase);
+
+      document.getElementById("result").innerHTML = `
+        <p class="moon">Anda: ${userEmoji} <strong>${userPhase}</strong></p>
+        <p class="moon">Pasangan: ${partnerEmoji} <strong>${partnerPhase}</strong></p>
+        <p>💞 Keserasian: ${compatibility}</p>
+      `;
+    }
+  </script>
+</body>
+</html>
