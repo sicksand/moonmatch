@@ -32,6 +32,11 @@
     .moon {
       font-size: 2rem;
     }
+    #downloadBtn {
+      margin-top: 1rem;
+      background-color: #ffd700;
+      color: #000;
+    }
   </style>
 </head>
 <body>
@@ -44,9 +49,12 @@
 
   <div class="result" id="result"></div>
 
+  <button onclick="unlockCertificate()">Buka Akses Sijil</button>
+  <button id="downloadBtn" disabled>Muat Turun Sijil Bulan</button>
+
   <script>
-    const API_KEY = '35fae9abc9664623acb144018252608'; // Replace with your WeatherAPI key
-    const LOCATION = 'Skudai'; // You can make this dynamic later
+    const API_KEY = '35fae9abc9664623acb144018252608';
+    const LOCATION = 'Skudai';
 
     async function fetchMoonPhase(date) {
       const url = `https://api.weatherapi.com/v1/astronomy.json?key=${API_KEY}&q=${LOCATION}&dt=${date}`;
@@ -70,9 +78,21 @@
     }
 
     function getCompatibility(p1, p2) {
-      if (p1 === p2) return "Serasi secara semula jadi 🌟";
-      if (p1.includes("Full") && p2.includes("Full")) return "Pasangan Purnama! Emosi mendalam & saling memahami 💖";
-      return "Berbeza fasa, tapi boleh saling melengkapi ✨";
+      const pairs = [
+        ["Waxing Crescent", "Waning Gibbous"],
+        ["First Quarter", "Last Quarter"],
+        ["Waxing Gibbous", "Waning Crescent"],
+        ["New Moon", "Full Moon"]
+      ];
+
+      for (let [a, b] of pairs) {
+        if ((p1 === a && p2 === b) || (p1 === b && p2 === a)) {
+          return "💖 Pasangan Pelengkap Bulan Penuh! Saling melengkapi secara simbolik dan emosi.";
+        }
+      }
+
+      if (p1 === p2) return "🌟 Serasi secara semula jadi, berkongsi tenaga yang sama.";
+      return "✨ Berbeza fasa, tapi boleh saling belajar dan berkembang bersama.";
     }
 
     async function getMoonPhases() {
@@ -97,6 +117,23 @@
         <p>💞 Keserasian: ${compatibility}</p>
       `;
     }
+
+    function unlockCertificate() {
+      const code = prompt("Masukkan kod akses untuk muat turun sijil:");
+      if (code === "MOONBREW2025") {
+        document.getElementById("downloadBtn").disabled = false;
+        alert("Akses dibuka! Anda boleh muat turun sijil.");
+      } else {
+        alert("Kod tidak sah. Sila cuba lagi.");
+      }
+    }
+
+    document.getElementById("downloadBtn").addEventListener("click", () => {
+      const link = document.createElement('a');
+      link.href = 'https://yourdomain.com/moon-certificate.jpg'; // Replace with actual certificate image URL
+      link.download = 'MoonMatch-Certificate.jpg';
+      link.click();
+    });
   </script>
 </body>
 </html>
