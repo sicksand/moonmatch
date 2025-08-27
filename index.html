@@ -46,6 +46,17 @@
       background-color: #ffd700;
       color: #000;
     }
+    footer {
+  text-align: center;
+  padding: 1rem;
+  margin-top: 3rem;
+  font-size: 0.95rem;
+  color: #ffd700;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  position: relative;
+  z-index: 1;
+}
   </style>
 </head>
 <body>
@@ -60,7 +71,9 @@
 
   <button onclick="unlockCertificate()">Buka Akses Sijil</button>
   <button id="downloadBtn" disabled>Muat Turun Sijil Bulan</button>
-
+  <footer>
+  Made in Skudai ✨ oleh <strong>Shafiq Mustapa</strong>
+</footer>
   <script>
     const API_KEY = '35fae9abc9664623acb144018252608';
     const LOCATION = 'Skudai';
